@@ -40,8 +40,8 @@ class _CheckScreenState extends State<CheckScreen> {
       // Подготовка данных
       final request = http.MultipartRequest(
         'POST',
-        // Uri.parse('ВАШ_АДРЕС_СЕРВЕРА/api/check')
-        Uri.parse('http://127.0.0.1:8000/predict/'),
+        // Uri.parse('http://127.0.0.1:8000/predict/'),
+        Uri.parse('https://skincheckapp-anatolysamaris.amvera.io/predict/')
       );
 
       // Добавляем файл изображения
