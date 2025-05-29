@@ -41,7 +41,7 @@ class _CheckScreenState extends State<CheckScreen> {
       final request = http.MultipartRequest(
         'POST',
         // Uri.parse('http://127.0.0.1:8000/predict/'),
-        Uri.parse('https://skincheckapp-anatolysamaris.amvera.io/predict/')
+        Uri.parse('https://skincheck-anatolysamaris.amvera.io/predict/'),
       );
 
       // Добавляем файл изображения
@@ -81,15 +81,23 @@ class _CheckScreenState extends State<CheckScreen> {
           ),
         );
       } else {
-        // Показать ошибку
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Ошибка: ${jsonResponse['error']}')),
-        );
+        if (jsonResponse['status'] == 400) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Ошибка! ${jsonResponse['error']}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Сервис временно недоступен. Попробуйте позже.')),
+          );
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Ошибка соединения: $e')));
+        // ).showSnackBar(SnackBar(content: Text('Ошибка соединения: $e')));
+      ).showSnackBar(
+        SnackBar(content: Text('Ошибка соединения. Проверьте соединение с Интернетом')),
+      );
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -136,11 +144,20 @@ class _CheckScreenState extends State<CheckScreen> {
               ),
               items:
                   [
-                    "Ладонь, подошва или ноготь", "Спина", "Грудь",
-                    "Ухо", "Лицо", "Стопа", "Гениталии", "Кисть руки", 
-                    "Бедро, колено или голень", "Шея", "Скальп (волосистая часть головы)",
-                    "Живот, бока или пах", "Плечо, локоть или предплечье"
-                ]
+                        "Ладонь, подошва или ноготь",
+                        "Спина",
+                        "Грудь",
+                        "Ухо",
+                        "Лицо",
+                        "Стопа",
+                        "Гениталии",
+                        "Кисть руки",
+                        "Бедро, колено или голень",
+                        "Шея",
+                        "Скальп (волосистая часть головы)",
+                        "Живот, бока или пах",
+                        "Плечо, локоть или предплечье",
+                      ]
                       .map(
                         (location) => DropdownMenuItem(
                           value: location,

@@ -16,6 +16,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   final _nicknameController = TextEditingController();
+  String? _birthDateError;
   final User _user = User();
   // final List<Result> _results = [];
   final DateFormat _dateFormat = DateFormat('dd.MM.yyyy');
@@ -52,15 +53,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('nickname', _nicknameController.text);
-      await prefs.setString('email', _emailController.text);
-      await prefs.setString('phone', _phoneController.text);
+      if (_user.birthDate != null) {
+        await prefs.setString('birthDate', _user.birthDate!.toIso8601String());
+        setState(() => _birthDateError = "");
+      } else {
+        setState(() => _birthDateError = 'Укажите дату рождения!');
+        return;
+      }
       if (_user.gender != null) {
         await prefs.setString('gender', _user.gender.toString());
       }
-      if (_user.birthDate != null) {
-        await prefs.setString('birthDate', _user.birthDate!.toIso8601String());
-      }
+      await prefs.setString('nickname', _nicknameController.text);
+      await prefs.setString('email', _emailController.text);
+      await prefs.setString('phone', _phoneController.text);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Данные сохранены')));
@@ -107,7 +112,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextFormField(
-              // initialValue: _user.nickname,
               controller: _nicknameController,
               decoration: InputDecoration(
                 labelText: 'Имя профиля',
@@ -116,9 +120,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               maxLength: 25,
               onSaved: (value) => _user.nickname = value!,
-              onChanged: (value) => _user.nickname = value, // Обновляем модель в реальном времени
-              // validator:
-              //     (value) => value!.isEmpty ? 'Введите имя профиля' : null,
+              onChanged:
+                  (value) =>
+                      _user.nickname =
+                          value, // Обновляем модель в реальном времени
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Введите имя профиля';
@@ -135,6 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return null;
               },
             ),
+            SizedBox(height: 16),
             TextFormField(
               controller: _emailController,
               decoration: InputDecoration(
@@ -148,7 +154,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Введите email';
                 }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                if (!RegExp(
+                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                ).hasMatch(value)) {
                   return 'Введите корректный email';
                 }
                 return null;
@@ -196,16 +204,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   }).toList(),
             ),
             SizedBox(height: 16),
-            Text('Дата рождения', style: TextStyle(fontSize: 16)),
-            ListTile(
-              title: Text(
-                _user.birthDate == null
-                    ? 'Не указана'
-                    : _dateFormat.format(_user.birthDate!),
-              ),
-              trailing: Icon(Icons.calendar_today),
-              onTap: () => _selectDate(context),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Дата рождения', style: TextStyle(fontSize: 16)),
+                InkWell(
+                  onTap: () => _selectDate(context),
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      errorText: _birthDateError, // Текст ошибки
+                      suffixIcon: Icon(Icons.calendar_today),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 16,
+                      ),
+                    ),
+                    child: Text(
+                      _user.birthDate == null
+                          ? 'Выберите дату'
+                          : _dateFormat.format(_user.birthDate!),
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ),
+                // if (_birthDateError != null)
+                //   Padding(
+                //     padding: EdgeInsets.only(top: 4),
+                //     child: Text(
+                //       _birthDateError!,
+                //       style: TextStyle(color: Colors.red, fontSize: 12),
+                //     ),
+                //   ),
+              ],
             ),
+            // Text('Дата рождения', style: TextStyle(fontSize: 16)),
+            // ListTile(
+            //   title: Text(
+            //     _user.birthDate == null
+            //         ? 'Не указана'
+            //         : _dateFormat.format(_user.birthDate!),
+            //   ),
+            //   trailing: Icon(Icons.calendar_today),
+            //   onTap: () => _selectDate(context),
+
+            // ),
             SizedBox(height: 24),
             Center(
               child: ElevatedButton(
@@ -216,36 +259,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Text('Сохранить профиль'),
               ),
             ),
-            // Divider(height: 40),
-            // Text(
-            //   'Мои результаты',
-            //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            // ),
-            // SizedBox(height: 8),
-            // _results.isEmpty
-            //     ? Padding(
-            //       padding: EdgeInsets.symmetric(vertical: 16),
-            //       child: Text(
-            //         'Вы ещё не проверили ни одной родинки',
-            //         style: TextStyle(color: Colors.grey),
-            //       ),
-            //     )
-            //     : Column(
-            //       children:
-            //           _results
-            //               .map(
-                            // (result) => Card(
-                            //   child: ListTile(
-                            //     title: Text('Локализация: ${result.location}'),
-                            //     subtitle: Text(
-                            //       'Результат: ${result.prediction}',
-                            //     ),
-                            //     trailing: Icon(Icons.chevron_right),
-                            //   ),
-                            // ),
-                          // )
-                          // .toList(),
-                // ),
           ],
         ),
       ),

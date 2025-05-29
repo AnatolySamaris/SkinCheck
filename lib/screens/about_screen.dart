@@ -33,10 +33,10 @@ class AboutScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            _buildInstructionStep('1. Заполните данные о себе в разделе "Профиль" - данные о том, какого Вы пола и возраста, влияют на точность анализа.'),
-            _buildInstructionStep('2. В разделе "Проверка" из выпадающего списка выберите место, на котором находится ваше образование на коже.'),
-            _buildInstructionStep('3. Добавьте фотографию образования - либо выбрав из галереи, либо сделав новое фото.'),
-            _buildInstructionStep('4. Получите предварительную оценку и рекомендации.'),
+            _buildStep('1. Заполните данные о себе в разделе "Профиль" - данные о том, какого Вы пола и возраста, влияют на точность анализа.'),
+            _buildStep('2. В разделе "Проверка" из выпадающего списка выберите место, на котором находится ваше образование на коже.'),
+            _buildStep('3. Добавьте фотографию образования - либо выбрав из галереи, либо сделав новое фото.'),
+            _buildStep('4. Получите предварительную оценку и рекомендации.'),
             const SizedBox(height: 15),
             
             const Text(
@@ -114,7 +114,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInstructionStep(String text) {
+  Widget _buildStep(String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(

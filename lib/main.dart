@@ -4,6 +4,7 @@ import 'screens/profile_screen.dart';
 import 'screens/check_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // void main() => runApp(MyApp());
 void main() async {
@@ -17,13 +18,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<void> clearSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Удаляет все данные
+  }
+
   @override
   Widget build(BuildContext context) {
+    clearSharedPreferences();
     return MaterialApp(
       title: 'Skin Check',
       theme: ThemeData(primarySwatch: Colors.green),
       localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate, // Локализация Material компонентов
+        GlobalMaterialLocalizations
+            .delegate, // Локализация Material компонентов
         GlobalWidgetsLocalizations.delegate, // Локализация базовых виджетов
         GlobalCupertinoLocalizations.delegate, // Локализация iOS-стиля
       ],
@@ -44,11 +52,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           body: TabBarView(
-            children: [
-              AboutScreen(),
-              ProfileScreen(),
-              CheckScreen(),
-            ],
+            children: [AboutScreen(), ProfileScreen(), CheckScreen()],
           ),
         ),
       ),
