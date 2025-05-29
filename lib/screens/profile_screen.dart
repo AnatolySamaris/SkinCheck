@@ -55,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final prefs = await SharedPreferences.getInstance();
       if (_user.birthDate != null) {
         await prefs.setString('birthDate', _user.birthDate!.toIso8601String());
-        setState(() => _birthDateError = "");
+        setState(() => _birthDateError = null);
       } else {
         setState(() => _birthDateError = 'Укажите дату рождения!');
         return;
