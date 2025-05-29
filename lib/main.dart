@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    clearSharedPreferences();
+    // clearSharedPreferences();
     return MaterialApp(
       title: 'Skin Check',
       theme: ThemeData(primarySwatch: Colors.green),
